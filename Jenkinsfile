@@ -4,7 +4,7 @@ pipeline {
     parameters {
         string(
             name: 'AWS_DEFAULT_REGION',
-            defaultValue: 'us-east-1',
+            defaultValue: 'ap-south-1',
             description: 'AWS region where the script will run'
         )
     }
