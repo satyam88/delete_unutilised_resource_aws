@@ -26,20 +26,27 @@ pipeline {
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
-                    pip install boto3
+                    pip install boto3 awscli
                 '''
             }
         }
 
         stage('Run Script') {
             steps {
-                withCredentials([[
+                withCredentials([[ 
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'my-aws-credentials-id'
                 ]]) {
                     sh '''
+                        set -e
                         . venv/bin/activate
-                        echo "🔹 Using AWS region: $AWS_DEFAULT_REGION"
+                        echo "🔹 AWS Region: $AWS_DEFAULT_REGION"
+                        echo "🔹 AWS Access Key: $AWS_ACCESS_KEY_ID"
+                        
+                        echo "🔹 Verifying AWS identity with STS..."
+                        aws sts get-caller-identity --region $AWS_DEFAULT_REGION
+
+                        echo "🔹 Running delete script..."
                         python delete_unused_ebs_volume_accross_regions.py
                     '''
                 }
