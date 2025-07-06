@@ -6,7 +6,7 @@ def get_all_regions():
     regions = ec2.describe_regions(AllRegions=False)
     return [region['RegionName'] for region in regions['Regions']]
 
-def delete_old_unattached_volumes(region, days_old=30):
+def delete_old_unattached_volumes(region, days_old=1):
     ec2 = boto3.client('ec2', region_name=region)
     paginator = ec2.get_paginator('describe_volumes')
 
