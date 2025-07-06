@@ -10,7 +10,6 @@ pipeline {
     }
 
     environment {
-        // Use the parameter as the environment variable
         AWS_DEFAULT_REGION = "${params.AWS_DEFAULT_REGION}"
     }
 
@@ -34,11 +33,16 @@ pipeline {
 
         stage('Run Script') {
             steps {
-                sh '''
-                    . venv/bin/activate
-                    echo "🔹 Using AWS region: $AWS_DEFAULT_REGION"
-                    python delete_unused_ebs_volume_accross_regions.py
-                '''
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'my-aws-credentials-id'
+                ]]) {
+                    sh '''
+                        . venv/bin/activate
+                        echo "🔹 Using AWS region: $AWS_DEFAULT_REGION"
+                        python delete_unused_ebs_volume_accross_regions.py
+                    '''
+                }
             }
         }
     }
