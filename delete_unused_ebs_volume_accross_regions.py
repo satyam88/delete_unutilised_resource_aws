@@ -6,12 +6,13 @@ def get_all_regions():
     regions = ec2.describe_regions(AllRegions=False)
     return [region['RegionName'] for region in regions['Regions']]
 
-def delete_old_unattached_volumes(region, days_old=10min):
+
+def delete_old_unattached_volumes(region, minutes_old=10):
+    from datetime import datetime, timezone, timedelta
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=minutes_old)    
     ec2 = boto3.client('ec2', region_name=region)
     paginator = ec2.get_paginator('describe_volumes')
-
-    now = datetime.now(timezone.utc)
-    cutoff = now - timedelta(days=days_old)
+    
 
     for page in paginator.paginate(
         Filters=[{'Name': 'status', 'Values': ['available']}]
