@@ -7,7 +7,7 @@ def get_all_regions():
     return [region['RegionName'] for region in regions['Regions']]
 
 
-def delete_old_unattached_volumes(region, minutes_old=10):
+def delete_old_unattached_volumes(region, minutes_old=5):
     from datetime import datetime, timezone, timedelta
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=minutes_old)    
     ec2 = boto3.client('ec2', region_name=region)
